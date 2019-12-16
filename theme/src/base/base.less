@@ -1,0 +1,38 @@
+/**
+ * Base style to affect HTML elements on a general scale.
+ */
+ @import url('https://fonts.googleapis.com/css?family=Quicksand:300|Source+Serif+Pro');
+ @fontFamilyBody: 'Source Serif Pro', serif;
+ @fontFamilyHeadings: 'Quicksand', sans-serif;
+
+@bgColorHtml: #3E606F;
+@bgColorBody: #3E606F;
+@colorBody: #D4D4D4;
+@baseFontSize: 100.01%;
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    overflow-y: scroll;  // Always show scrollbar to avoid flickr
+    background-color: @bgColorHtml;
+    font-family: @fontFamilyBody;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    color: @colorBody;
+    background-color: @bgColorBody;
+    #desinax-hgrid.font(@fontSizeBody);
+}
+
+
+// Affects all basic typographic elements
+#desinax-hgrid.activateDefaultTypography();
+
+// Responsive images
+img {
+    max-width: 100%;
+}

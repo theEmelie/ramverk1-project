@@ -1,0 +1,143 @@
+/**
+* General layout
+*/
+
+.wrap-all {
+    background-color: @backgroundColor;
+}
+
+// .inner-wrap {
+//     background-color: @backgroundColor;
+// }
+
+/**
+* Header
+*/
+.region-header-col-1 a,
+.region-header-col-3 a
+{
+    color: @textColor;
+}
+
+/**
+* Navbar
+*/
+.my-navbar {
+    color: @backgroundColor;
+}
+.my-navbar a {
+    color: @backgroundColor;
+}
+.my-navbar a:link {
+    color: @backgroundColor;
+}
+.my-navbar a:hover {
+    background-color: #fff;
+    text-decoration: underline;
+}
+.my-navbar a:active {
+    color: #fff;
+}
+.my-navbar .selected {
+    background-color: #fff;
+}
+.rm-default li li {
+    background-color: @backgroundColor;
+    color: @backgroundColor;
+}
+
+/**
+* Footer
+*/
+.region-footer a {
+    color: @linkColor;
+}
+
+.region-footer p,
+.region-footer h4 {
+    color: @backgroundColor;
+}
+
+
+.outer-wrap-footer,
+.inner-wrap-footer {
+    color: #D1DBBD;
+    background-color: @footerColor;
+}
+
+.outer-wrap-footer {
+    border-top: white solid 1px;
+}
+
+.region-footer {
+    text-align: center;
+}
+
+.outer-wrap-footer {
+    padding-top: @magicNumber;
+    padding-bottom: @magicNumber * 2;
+}
+
+/**
+* Byline
+*/
+.author-byline {
+    border-color: grey;
+    background-color: @bylineColor;
+}
+.author-byline a {
+    color: @linkColor
+}
+
+/**
+* Sidebars
+*/
+.wrap-sidebar a {
+    color: @linkColor;
+}
+.region-breadcrumb a {
+    color: @linkColor;
+}
+.next-previous a {
+    color: @linkColor;
+}
+.next {
+    color: @linkColor;
+}
+.previous {
+    color: @linkColor;
+}
+
+/**
+* Tables
+*/
+table {
+    margin-top: 1.5em;
+    margin-bottom: 1em;
+    border: 1px solid cadetblue;
+    width: 100%;
+    color: #f0f0f0;
+}
+
+tr:first-child {
+    background-color: #2e505f;
+}
+
+tr:hover,
+tr:nth-child(even):hover {
+    background-color: cadetblue;
+}
+
+th {
+    font-weight: bold;
+    border-bottom: 1px solid cadetblue;
+}
+
+th,
+td {
+    padding: 7px;
+}
+
+tr:nth-child(even) {
+    background-color: #4e707f;
+}

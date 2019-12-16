@@ -1,0 +1,125 @@
+/**
+ * Base style to affect HTML elements on a general scale.
+ */
+@bgColorHtml: pink;
+@bgColorBody: #fff;
+@fontFamilyBody: calibri, serif;
+
+
+html {
+  overflow-y: scroll;
+  background-color: @footerColor;
+}
+
+// main {
+//   min-height: 100%;
+// }
+
+body {
+    #desinax-hgrid.font(@fontSizeBody);
+    background-color: @bgColorBody;
+    // font-family: @fontFamilyBody;
+}
+
+// Activate grid and affect all typographic elements
+#desinax-hgrid.activateDefaultTypography();
+
+li {
+    list-style-type: none;
+}
+
+ul {
+    padding: 0;
+    list-style: none;
+}
+
+figure.figure.right {
+    float: right;
+    padding: 10px;
+}
+
+figure.figure.left {
+    float: left;
+    padding: 10px;
+}
+
+figure img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+}
+
+figcaption {
+  font-style: italic;
+  font-size: small;
+}
+
+img {
+    max-width: 100%;
+}
+
+figure {
+    #desinax-vgrid.grid(@columns);
+}
+
+p {
+    color: @textColor;
+}
+
+h1, h2, h3, h4 {
+    color: @textColor;
+    a {
+        color: @textColor;
+        &:hover {
+            color: @textColor;
+        }
+    }
+}
+
+h5 {
+    border-bottom: none;
+    color: @textColor;
+}
+
+a {
+    color: @linkColor;
+}
+
+::selection {
+    background: @footerColor; /* WebKit/Blink Browsers */
+}
+
+::-moz-selection {
+    background: @footerColor; /* Gecko Browsers */
+}
+
+.getPost {
+    font-size: 25px;
+}
+
+label {
+    color: @textColor;
+}
+
+code {
+    background-color: #ccc;
+}
+
+.line {
+    border-bottom: 1px solid @textColor;
+    margin-top: 20px;
+}
+
+.codes {
+    background-color: #ccc;
+    padding: 10px;
+}
+
+.getPostResult {
+    font-size: 20px;
+}
+
+.locationData {
+    font-size: 20px;
+}

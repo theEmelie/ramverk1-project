@@ -1,0 +1,35 @@
+/**
+ * Layout for responsive style through media queries.
+ */
+
+@media screen and (max-width: 1500px) {
+    .site-logo {
+        display: none;
+    }
+}
+
+/**
+ * Navbar
+ */
+@media screen and (max-width: 960px) {
+    .rm-desktop a {
+        padding-left: 0.5em;
+        padding-right: 0.5em;
+    }
+}
+
+@media screen and (max-width: 800px) {
+    .region-header-col-1,
+    .region-header-col-3 {
+        width: 15%;
+    }
+    .region-header-col-2 {
+        width: 70%;
+    }
+}
+
+@media screen and (max-width: 700px) {
+    .rm-desktop {
+        display: none;
+    }
+}

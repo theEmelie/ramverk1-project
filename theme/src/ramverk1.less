@@ -1,0 +1,75 @@
+/*!
+ * Stylesheet for ramverk1.
+ *
+ * This stylesheet is for the ramverk1 course.
+ */
+
+  /**
+   * Normalize and reset the style.
+   */
+  @import "normalize.css/normalize.less";
+
+  /**
+  * Font Awesome.
+  */
+ @import "@fortawesome/fontawesome-free/less/fontawesome.less";
+ @import "@fortawesome/fontawesome-free/less/solid.less";
+ @import "@fortawesome/fontawesome-free/less/brands.less";
+
+
+ /**
+  * A responsive menu.
+  */
+ @import "@desinax/responsive-menu/less/responsive-menu.less";
+
+ /**
+  * Import the typographic grid.
+  */
+ @import "@desinax/typographic-grid/less/typography-font-families.less";
+ @import "@desinax/typographic-grid/less/typography-defaults.less";
+
+ // Show the grid
+ .hgrid .inner-wrap {
+     @gridImage: "../img/magic-number-@{magicNumber}.png";
+     #desinax-hgrid.showGrid(@gridImage);
+ }
+
+ /**
+  * Base style to affect HTML elements on a general scale.
+  */
+  @import "base/base_ramverk1.less";
+
+ /**
+  * Import the vertical grid.
+  */
+ @import "@desinax/vertical-grid/less/grid.less";
+
+ /**
+  * Layout style for general structure of header, navbar, main, footer
+  * and other regions of the page including route specific styles.
+  */
+ @import "layout/layout_ramverk1_v1.less";
+ @import "layout/layout_ramverk1_v2.less";
+
+ @import "layout/responsive.less";
+ @import "layout/regions.less";     // To add style for ?regions
+
+/**
+ * My own settings, not currently in their own module.
+ */
+
+@import url('https://fonts.googleapis.com/css?family=Quicksand:300');
+@import url('https://fonts.googleapis.com/css?family=Assistant&display=swap');
+ @fontFamilyBody: 'Assistant', sans-serif;
+ @fontFamilyHeadings: 'Quicksand', sans-serif;
+
+ @backgroundColor: #f6f6f6;
+ // @textColor: #D1DBBD;
+ @textColor: black;
+ @linkColor: #FF66B2;
+ @bylineColor: #444;
+ @footerColor: #444;
+
+ // Magic number and base fontsize
+ @magicNumber:  22px;
+ @fontSizeBody: 16px;
