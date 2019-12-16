@@ -1,3 +1,3 @@
-#### Redovisa på GitHub
+#### Project at GitHub
 
-Du kan hitta allt om denna hemsida på [mitt GitHub.](https://github.com/theEmelie/ramverk1).
+You can find all the coding on [GitHub](https://github.com/theEmelie/ramverk1-project).

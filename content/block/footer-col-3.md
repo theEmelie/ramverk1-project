@@ -1,5 +1,4 @@
-#### Om Kursen
+#### GitHub
 
-Denna kurs är en del utav programmet Webbprogramming som
-undervisas på  
-Blekinge Tekniska Högskola.
+Check out our [GitHub repo](https://github.com/theEmelie/ramverk1-project) to
+learn how this website is built with help of the Anax framework.

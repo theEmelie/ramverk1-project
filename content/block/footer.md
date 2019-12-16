@@ -1,3 +1,1 @@
-Copyright © 2019 FurQuestions
-
-[GitHub](https://github.com/theEmelie/ramverk1)
+Copyright © 2019-2020 FurQuestions

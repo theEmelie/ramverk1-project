@@ -1,3 +1,3 @@
-#### Om hemsidan
+#### About
 
-Denna hemsida är uppbyggd med ett syfte av att lära sig ramverk.
+This website is created for the purpose of getting your questions answered by other users.
