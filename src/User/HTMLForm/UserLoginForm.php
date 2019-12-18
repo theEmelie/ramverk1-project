@@ -23,7 +23,6 @@ class UserLoginForm extends FormModel
         $this->form->create(
             [
                 "id" => __CLASS__,
-                "legend" => "User Login"
             ],
             [
                 "user" => [
@@ -61,33 +60,22 @@ class UserLoginForm extends FormModel
         $acronym       = $this->form->value("user");
         $password      = $this->form->value("password");
 
-        // Try to login
-        // $db = $this->di->get("dbqb");
-        // $db->connect();
-        // $user = $db->select("password")
-        //            ->from("User")
-        //            ->where("acronym = ?")
-        //            ->execute([$acronym])
-        //            ->fetch();
-        //
-        // // $user is false if user is not found
-        // if (!$user || !password_verify($password, $user->password)) {
-        //    $this->form->rememberValues();
-        //    $this->form->addOutput("User or password did not match.");
-        //    return false;
-        // }
-
         $user = new User();
         $user->setDb($this->di->get("dbqb"));
         $res = $user->verifyPassword($acronym, $password);
 
+        $session = $this->di->get("session");
+        $response = $this->di->get("response");
+
         if (!$res) {
            $this->form->rememberValues();
            $this->form->addOutput("User or password did not match.");
+           $session->set("acronym", "");
            return false;
         }
 
         $this->form->addOutput("User " . $user->acronym . " logged in.");
-        return true;
+        $session->set("acronym", $user->acronym);
+        $response->redirect("user");
     }
 }

@@ -5693,6 +5693,12 @@ code {
   color: black;
 }
 /**
+* Main
+*/
+.outer-wrap-main {
+  min-height: 600px;
+}
+/**
 * Navbar
 */
 .my-navbar {

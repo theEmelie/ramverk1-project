@@ -9,7 +9,7 @@ use Psr\Container\ContainerInterface;
 /**
  * Example of FormModel implementation.
  */
-class CreateUserForm extends FormModel
+class UserChangePasswordForm extends FormModel
 {
     /**
      * Constructor injects with DI container.
@@ -25,16 +25,10 @@ class CreateUserForm extends FormModel
                 "id" => __CLASS__,
             ],
             [
-                "acronym" => [
-                    "type"        => "text",
-                ],
-
-                "email" => [
-                    "type"        => "text",
-                ],
-
                 "password" => [
                     "type"        => "password",
+                    //"description" => "Here you can place a description.",
+                    //"placeholder" => "Here is a placeholder",
                 ],
 
                 "password-again" => [
@@ -46,7 +40,7 @@ class CreateUserForm extends FormModel
 
                 "submit" => [
                     "type" => "submit",
-                    "value" => "Create user",
+                    "value" => "Change Password",
                     "callback" => [$this, "callbackSubmit"]
                 ],
             ]
@@ -64,8 +58,6 @@ class CreateUserForm extends FormModel
     public function callbackSubmit()
     {
         // Get values from the submitted form
-        $acronym       = $this->form->value("acronym");
-        $email         = $this->form->value("email");
         $password      = $this->form->value("password");
         $passwordAgain = $this->form->value("password-again");
 
@@ -75,20 +67,19 @@ class CreateUserForm extends FormModel
             $this->form->addOutput("Password did not match.");
             return false;
         }
-
+        
+        $session = $this->di->get("session");
         $response = $this->di->get("response");
+        $username = $session->get("acronym");
 
         $user = new User();
         $user->setDb($this->di->get("dbqb"));
-        $user->acronym = $acronym;
-        $user->email = $email;
+        $res = $user->getUserData($username);
         $user->setPassword($password);
-        $user->created = date("Y-m-d H:i:s");
-        $user->updated = $user->created;
-        $user->active = $user->created;
+        $user->updated = date("Y-m-d H:i:s");
         $user->save();
 
-        $this->form->addOutput("User was created.");
-        $response->redirect("user/login");
+        $this->form->addOutput("Password has been changed.");
+        $response->redirect("user");
     }
 }

@@ -27,7 +27,7 @@ return [
         ],
         [
             "text" => "User",
-            "url" => "user/login",
+            "url" => "user",
             "title" => "User.",
         ],
         [

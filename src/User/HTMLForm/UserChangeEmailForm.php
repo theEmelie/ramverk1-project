@@ -9,7 +9,7 @@ use Psr\Container\ContainerInterface;
 /**
  * Example of FormModel implementation.
  */
-class CreateUserForm extends FormModel
+class UserChangeEmailForm extends FormModel
 {
     /**
      * Constructor injects with DI container.
@@ -25,28 +25,13 @@ class CreateUserForm extends FormModel
                 "id" => __CLASS__,
             ],
             [
-                "acronym" => [
-                    "type"        => "text",
-                ],
-
                 "email" => [
                     "type"        => "text",
                 ],
 
-                "password" => [
-                    "type"        => "password",
-                ],
-
-                "password-again" => [
-                    "type"        => "password",
-                    "validation" => [
-                        "match" => "password"
-                    ],
-                ],
-
                 "submit" => [
                     "type" => "submit",
-                    "value" => "Create user",
+                    "value" => "Change Email",
                     "callback" => [$this, "callbackSubmit"]
                 ],
             ]
@@ -64,31 +49,20 @@ class CreateUserForm extends FormModel
     public function callbackSubmit()
     {
         // Get values from the submitted form
-        $acronym       = $this->form->value("acronym");
-        $email         = $this->form->value("email");
-        $password      = $this->form->value("password");
-        $passwordAgain = $this->form->value("password-again");
+        $email = $this->form->value("email");
 
-        // Check password matches
-        if ($password !== $passwordAgain ) {
-            $this->form->rememberValues();
-            $this->form->addOutput("Password did not match.");
-            return false;
-        }
-
+        $session = $this->di->get("session");
         $response = $this->di->get("response");
+        $username = $session->get("acronym");
 
         $user = new User();
         $user->setDb($this->di->get("dbqb"));
-        $user->acronym = $acronym;
+        $res = $user->getUserData($username);
         $user->email = $email;
-        $user->setPassword($password);
-        $user->created = date("Y-m-d H:i:s");
-        $user->updated = $user->created;
-        $user->active = $user->created;
+        $user->updated = date("Y-m-d H:i:s");
         $user->save();
 
-        $this->form->addOutput("User was created.");
-        $response->redirect("user/login");
+        $this->form->addOutput("Email has been changed.");
+        $response->redirect("user");
     }
 }

@@ -21,6 +21,7 @@ class User extends ActiveRecordModel
      */
     public $id;
     public $acronym;
+    public $email;
     public $password;
     public $created;
     public $updated;
@@ -52,5 +53,10 @@ class User extends ActiveRecordModel
     {
         $this->find("acronym", $acronym);
         return password_verify($password, $this->password);
+    }
+
+    public function getUserData($acronym)
+    {
+        $this->find("acronym", $acronym);
     }
 }
