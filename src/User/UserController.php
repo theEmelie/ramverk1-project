@@ -68,8 +68,6 @@ class UserController implements ContainerInjectableInterface
         $res = $user->getUserData($username);
 
         $grav = $this->getGravatar($user->email);
-        // var_dump($user);
-        // var_dump($user->acronym);
 
         // Get all questions asked by user
 

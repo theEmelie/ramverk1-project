@@ -25,7 +25,7 @@ return [
             "title" => "Tags.",
         ],
         [
-            "text" => "User",
+            "text" => "Profile",
             "url" => "user",
             "title" => "User.",
         ],

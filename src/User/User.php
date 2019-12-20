@@ -59,4 +59,9 @@ class User extends ActiveRecordModel
     {
         $this->find("acronym", $acronym);
     }
+
+    public function getUserDataById($id)
+    {
+        $this->find("id", $id);
+    }
 }

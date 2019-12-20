@@ -71,11 +71,13 @@ class UserLoginForm extends FormModel
            $this->form->rememberValues();
            $this->form->addOutput("User or password did not match.");
            $session->set("acronym", "");
+           $session->set("user_id", "");
            return false;
         }
 
         $this->form->addOutput("User " . $user->acronym . " logged in.");
         $session->set("acronym", $user->acronym);
+        $session->set("user_id", $user->id);
         $response->redirect("user");
     }
 }

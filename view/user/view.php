@@ -3,7 +3,7 @@ namespace Anax\View;
 
 ?>
 
-<h3>Profile for <?= $username ?>.</h3>
+<h2>Profile for <?= $username ?></h2>
 
 <img src="<?= $grav; ?>" alt="" />
 
