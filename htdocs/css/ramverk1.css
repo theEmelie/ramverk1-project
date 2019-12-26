@@ -5815,13 +5815,28 @@ tr:nth-child(even) {
   font-size: 14px;
   font-style: italic;
   display: block;
+  margin-bottom: 15px;
 }
 .ask {
   float: right;
   margin-top: 30px;
 }
 .queText {
-  font-size: 18px;
+  font-size: 17px;
+}
+.answerText {
+  font-size: 16px;
+}
+.commentText,
+.commentAuthor,
+.commentDate {
+  font-size: 13px;
+}
+.commentDate {
+  font-style: italic;
+}
+.commentText {
+  display: block;
 }
 .queTitle {
   border-bottom: none;
@@ -5855,6 +5870,25 @@ textarea {
   background-color: #ddd;
   border-radius: 10px;
   margin-right: 3px;
+}
+/**
+* Comments
+*/
+.answers {
+  margin-left: 5em;
+}
+.answer {
+  margin-top: 1em;
+}
+.allComments {
+  margin-left: 5em;
+}
+.qComment {
+  margin-top: 1em;
+}
+.makeComment {
+  margin-left: 88.4%;
+  margin-top: 0.5em;
 }
 /**
  * Layout for responsive style through media queries.

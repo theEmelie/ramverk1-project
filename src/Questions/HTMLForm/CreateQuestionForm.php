@@ -68,11 +68,11 @@ class CreateQuestionForm extends FormModel
         $response = $this->di->get("response");
         $session  = $this->di->get("session");
 
-        if ($session->has("user_id")) {
+        if ($session->has("userId")) {
             $question = new Questions();
             $question->setDb($this->di->get("dbqb"));
 
-            $question->user_id = $session->get("user_id");
+            $question->userId = $session->get("userId");
             $question->title = $title;
             $question->text = $text;
             $question->created = date("Y-m-d H:i:s");
@@ -82,8 +82,7 @@ class CreateQuestionForm extends FormModel
 
             $tags = array_unique(array_map("trim", explode(",", $tagString)));
             foreach ($tags as $tagName) {
-                if ($tagName != "")
-                {
+                if ($tagName != "") {
                     $tagObj = new Tags();
                     $tagObj->setDb($this->di->get("dbqb"));
                     if (!$tagObj->tagExists($tagName)) {
@@ -94,8 +93,8 @@ class CreateQuestionForm extends FormModel
                     // Add entry into TagQuestions table.
                     $tagQuestion = new TagsQuestions();
                     $tagQuestion->setDb($this->di->get("dbqb"));
-                    $tagQuestion->tag_id = $tagObj->id;
-                    $tagQuestion->question_id = $question->id;
+                    $tagQuestion->tagId = $tagObj->id;
+                    $tagQuestion->questionId = $question->id;
                     $tagQuestion->save();
                 }
             }

@@ -1,18 +1,18 @@
 <?php
 
-namespace Anax\TagsQuestions;
+namespace Anax\Answers;
 
 use Anax\DatabaseActiveRecord\ActiveRecordModel;
 
 /**
  * A database driven model.
  */
-class TagsQuestions extends ActiveRecordModel
+class Answers extends ActiveRecordModel
 {
     /**
      * @var string $tableName name of the database table.
      */
-    protected $tableName = "TagsQuestions";
+    protected $tableName = "Answers";
 
     /**
      * Columns in the table.
@@ -20,16 +20,21 @@ class TagsQuestions extends ActiveRecordModel
      * @var integer $id primary key auto incremented.
      */
     public $id;
-    public $tagId;
+    public $userId;
     public $questionId;
+    public $text;
+    public $created;
+    public $updated;
+    public $deleted;
+    public $active;
 
-    public function getAllByQuestionId($qid)
+    public function getAllAnswersByQuestionId($qid)
     {
         return $this->findAllWhere("questionId = ?", $qid);
     }
 
-    public function getAllByTagId($tid)
+    public function getAllAnswersByUserId($uid)
     {
-        return $this->findAllWhere("tagId = ?", $tid);
+        return $this->findAllWhere("userId = ?", $uid);
     }
 }

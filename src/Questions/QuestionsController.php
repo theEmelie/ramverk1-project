@@ -4,10 +4,18 @@ namespace Anax\Questions;
 
 use Anax\Commons\ContainerInjectableInterface;
 use Anax\Commons\ContainerInjectableTrait;
+
 use Anax\Questions\HTMLForm\CreateQuestionForm;
+use Anax\Answers\HTMLForm\CreateAnswerForm;
 use Anax\TagsQuestions\TagsQuestions;
+use Anax\qComments\HTMLForm\CreateQCommentForm;
+use Anax\aComments\HTMLForm\CreateACommentForm;
+
 use Anax\Tags\Tags;
 use Anax\User\User;
+use Anax\Answers\Answers;
+use Anax\QComments\QComments;
+use Anax\AComments\AComments;
 
 // use Anax\Route\Exception\ForbiddenException;
 // use Anax\Route\Exception\NotFoundException;
@@ -39,24 +47,10 @@ class QuestionsController implements ContainerInjectableInterface
         foreach ($questions as $que) {
             $user = new User();
             $user->setDb($this->di->get("dbqb"));
-            $res = $user->getUserDataById($que->user_id);
+            $user->getUserDataById($que->userId);
             $que->username = $user->acronym;
 
-            // // Get tags for question
-            // $tqObj = new TagsQuestions();
-            // $tqObj->setDb($this->di->get("dbqb"));
-            // $tagsQuestions = $tqObj->getAllByQuestionId($que->id);
-            //
-            // $tagNames = array();
-            //
-            // foreach ($tagsQuestions as $tqs) {
-            //     $tagObj = new Tags();
-            //     $tagObj->setDb($this->di->get("dbqb"));
-            //     $res = $tagObj->getTagById($tqs->tag_id);
-            //     array_push($tagNames, $tagObj->tag);
-            // }
             $que->tagNames = $this->getTagNames($que->id);
-
         }
 
         $page->add("questions/viewAll", [
@@ -118,12 +112,12 @@ class QuestionsController implements ContainerInjectableInterface
         foreach ($tagsQuestions as $tqs) {
             $question = new Questions();
             $question->setDb($this->di->get("dbqb"));
-            $res = $question->getQuestionById($tqs->question_id);
+            $res = $question->getQuestionById($tqs->questionId);
 
             // Add username to array
             $user = new User();
             $user->setDb($this->di->get("dbqb"));
-            $res = $user->getUserDataById($question->user_id);
+            $res = $user->getUserDataById($question->userId);
             $question->username = $user->acronym;
 
             // If we want to add all tags for this question we have to search
@@ -153,7 +147,7 @@ class QuestionsController implements ContainerInjectableInterface
         foreach ($tagsQuestions as $tqs) {
             $tagObj = new Tags();
             $tagObj->setDb($this->di->get("dbqb"));
-            $res = $tagObj->getTagById($tqs->tag_id);
+            $tagObj->getTagById($tqs->tagId);
             array_push($tagNames, $tagObj->tag);
         }
 
@@ -175,10 +169,25 @@ class QuestionsController implements ContainerInjectableInterface
         $question->setDb($this->di->get("dbqb"));
         $res = $question->getQuestionById($qid);
 
+        // Find all comments
+        $qComment = new QComments();
+        $qComment->setDb($this->di->get("dbqb"));
+        $qComments = $qComment->getAllqCommentsByQuestionId($qid);
+
+        foreach ($qComments as $com) {
+            $comUser = new User();
+            $comUser->setDb($this->di->get("dbqb"));
+            $res = $comUser->getUserDataById($com->userId);
+
+            $com->username = $comUser->acronym;
+        }
+
+        $question->comments = $qComments;
+
         // Add username to array
         $user = new User();
         $user->setDb($this->di->get("dbqb"));
-        $res = $user->getUserDataById($question->user_id);
+        $res = $user->getUserDataById($question->userId);
         $question->username = $user->acronym;
 
         // If we want to add all tags for this question we have to search
@@ -187,13 +196,117 @@ class QuestionsController implements ContainerInjectableInterface
         $question->tagNames = $tagNames;
 
         // Now get all answers
+        $answer = new Answers();
+        $answer->setDb($this->di->get("dbqb"));
+        $answers = $answer->getAllAnswersByQuestionId($question->id);
+
+        foreach ($answers as $ans) {
+            $user = new User();
+            $user->setDb($this->di->get("dbqb"));
+            $res = $user->getUserDataById($ans->userId);
+            $ans->username = $user->acronym;
+
+            // Find all comments for answer
+            $aComment = new AComments();
+            $aComment->setDb($this->di->get("dbqb"));
+            $aComments = $aComment->getAllaCommentsByAnswerId($ans->id);
+
+            foreach ($aComments as $com) {
+                $comUser = new User();
+                $comUser->setDb($this->di->get("dbqb"));
+                $res = $comUser->getUserDataById($com->userId);
+
+                $com->username = $comUser->acronym;
+            }
+
+            $ans->comments = $aComments;
+        }
 
         $page->add("questions/view", [
-            "question" => $question
+            "question" => $question,
+            "answers" => $answers
         ]);
 
         return $page->render([
             "title" => "View Question",
+        ]);
+    }
+
+    public function answerAction($questionId) : object
+    {
+        $page = $this->di->get("page");
+        $session = $this->di->get("session");
+        $username = $session->get("acronym");
+
+        if ($username == "") {
+            $response = $this->di->get("response");
+            $response->redirect("user/login");
+        }
+
+        $form = new CreateAnswerForm($this->di, $questionId);
+        $form->check();
+
+        $page->add("questions/answer", [
+        ]);
+
+        $page->add("anax/v2/article/default", [
+            "content" => $form->getHTML(),
+        ]);
+
+        return $page->render([
+            "title" => "Answer Question",
+        ]);
+    }
+
+    public function commentAction($questionId) : object
+    {
+        $page = $this->di->get("page");
+        $session = $this->di->get("session");
+        $username = $session->get("acronym");
+
+        if ($username == "") {
+            $response = $this->di->get("response");
+            $response->redirect("user/login");
+        }
+
+        $form = new CreateQCommentForm($this->di, $questionId);
+        $form->check();
+
+        $page->add("questions/qComment", [
+        ]);
+
+        $page->add("anax/v2/article/default", [
+            "content" => $form->getHTML(),
+        ]);
+
+        return $page->render([
+            "title" => "Comment Question",
+        ]);
+    }
+
+    public function answerCommentAction($questionId, $answerId) : object
+    {
+        $page = $this->di->get("page");
+        $session = $this->di->get("session");
+        $username = $session->get("acronym");
+
+        if ($username == "") {
+            $response = $this->di->get("response");
+            $response->redirect("user/login");
+        }
+
+        $form = new CreateACommentForm($this->di, $questionId, $answerId);
+        $form->check();
+
+        $page->add("questions/aComment", [
+        ]);
+
+        $page->add("anax/v2/article/default", [
+            "content" => $form->getHTML(),
+        ]);
+
+        return $page->render([
+            "title" => "Comment Answer",
         ]);
     }
     /**

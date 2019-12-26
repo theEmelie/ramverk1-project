@@ -62,19 +62,19 @@ class UserChangePasswordForm extends FormModel
         $passwordAgain = $this->form->value("password-again");
 
         // Check password matches
-        if ($password !== $passwordAgain ) {
+        if ($password !== $passwordAgain) {
             $this->form->rememberValues();
             $this->form->addOutput("Password did not match.");
             return false;
         }
-        
+
         $session = $this->di->get("session");
         $response = $this->di->get("response");
         $username = $session->get("acronym");
 
         $user = new User();
         $user->setDb($this->di->get("dbqb"));
-        $res = $user->getUserData($username);
+        $user->getUserData($username);
         $user->setPassword($password);
         $user->updated = date("Y-m-d H:i:s");
         $user->save();

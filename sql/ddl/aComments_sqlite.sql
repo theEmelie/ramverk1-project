@@ -1,11 +1,11 @@
 --
 -- Answers Questions
 --
-DROP TABLE IF EXISTS Answers;
-CREATE TABLE Answers (
+DROP TABLE IF EXISTS AnswerComments;
+CREATE TABLE AnswerComments (
     "id" INTEGER PRIMARY KEY NOT NULL,
     "userId" INTEGER NOT NULL,
-    "questionId" INTEGER NOT NULL,
+    "answerId" INTEGER NOT NULL,
     "text" TEXT NOT NULL,
     "created" DATETIME,
     "updated" DATETIME,

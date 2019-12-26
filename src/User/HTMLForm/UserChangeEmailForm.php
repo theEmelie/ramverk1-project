@@ -57,7 +57,7 @@ class UserChangeEmailForm extends FormModel
 
         $user = new User();
         $user->setDb($this->di->get("dbqb"));
-        $res = $user->getUserData($username);
+        $user->getUserData($username);
         $user->email = $email;
         $user->updated = date("Y-m-d H:i:s");
         $user->save();

@@ -4,10 +4,14 @@ namespace Anax\User;
 
 use Anax\Commons\ContainerInjectableInterface;
 use Anax\Commons\ContainerInjectableTrait;
+
 use Anax\User\HTMLForm\UserLoginForm;
 use Anax\User\HTMLForm\CreateUserForm;
 use Anax\User\HTMLForm\UserChangePasswordForm;
 use Anax\User\HTMLForm\UserChangeEmailForm;
+
+use Anax\Answers\Answers;
+use Anax\Questions\Questions;
 
 // use Anax\Route\Exception\ForbiddenException;
 // use Anax\Route\Exception\NotFoundException;
@@ -65,7 +69,7 @@ class UserController implements ContainerInjectableInterface
 
         $user = new User();
         $user->setDb($this->di->get("dbqb"));
-        $res = $user->getUserData($username);
+        $user->getUserData($username);
 
         $grav = $this->getGravatar($user->email);
 
@@ -154,6 +158,13 @@ class UserController implements ContainerInjectableInterface
     {
         $page = $this->di->get("page");
         $session = $this->di->get("session");
+        $username = $session->get("acronym");
+
+        if ($username == "") {
+            $response = $this->di->get("response");
+            $response->redirect("user/login");
+        }
+
         $form = new UserChangePasswordForm($this->di);
         $form->check();
 
@@ -173,6 +184,13 @@ class UserController implements ContainerInjectableInterface
     {
         $page = $this->di->get("page");
         $session = $this->di->get("session");
+        $username = $session->get("acronym");
+
+        if ($username == "") {
+            $response = $this->di->get("response");
+            $response->redirect("user/login");
+        }
+
         $form = new UserChangeEmailForm($this->di);
         $form->check();
 
@@ -185,6 +203,45 @@ class UserController implements ContainerInjectableInterface
 
         return $page->render([
             "title" => "Change Email",
+        ]);
+    }
+
+    public function viewAction($username)
+    {
+        $page = $this->di->get("page");
+        $session = $this->di->get("session");
+        $username = $session->get("acronym");
+
+        if ($username == "") {
+            $response = $this->di->get("response");
+            $response->redirect("user/login");
+        }
+
+        $user = new User();
+        $user->setDb($this->di->get("dbqb"));
+        $res = $user->getUserData($username);
+
+        $question = new Questions();
+        $question->setDb($this->di->get("dbqb"));
+        $questions = $question->getAllQuestionsByUserId($user->id);
+
+        $answer = new Answers();
+        $answer->setDb($this->di->get("dbqb"));
+        $answers = $answer->getAllAnswersByUserId($user->id);
+
+        foreach ($answers as $ans) {
+            $res = $question->getQuestionById($ans->questionId);
+            $ans->questionTitle = $question->title;
+        }
+
+        $page->add("user/viewPosts", [
+            "questions" => $questions,
+            "answers" => $answers,
+            "username" => $username
+        ]);
+
+        return $page->render([
+            "title" => "Viewing Posts",
         ]);
     }
 
@@ -217,5 +274,4 @@ class UserController implements ContainerInjectableInterface
         }
         return $url;
     }
-
 }

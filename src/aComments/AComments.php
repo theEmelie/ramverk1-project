@@ -1,18 +1,18 @@
 <?php
 
-namespace Anax\Questions;
+namespace Anax\AComments;
 
 use Anax\DatabaseActiveRecord\ActiveRecordModel;
 
 /**
  * A database driven model.
  */
-class Questions extends ActiveRecordModel
+class AComments extends ActiveRecordModel
 {
     /**
      * @var string $tableName name of the database table.
      */
-    protected $tableName = "Questions";
+    protected $tableName = "AnswerComments";
 
     /**
      * Columns in the table.
@@ -21,26 +21,15 @@ class Questions extends ActiveRecordModel
      */
     public $id;
     public $userId;
-    public $title;
+    public $answerId;
     public $text;
     public $created;
     public $updated;
     public $deleted;
     public $active;
 
-
-    public function getAllQuestions()
+    public function getAllaCommentsByAnswerId($aid)
     {
-        return $this->findAll();
-    }
-
-    public function getQuestionById($qid)
-    {
-        return $this->find("id", $qid);
-    }
-
-    public function getAllQuestionsByUserId($uid)
-    {
-        return $this->findAllWhere("userId = ?", $uid);
+        return $this->findAllWhere("answerId = ?", $aid);
     }
 }
