@@ -2,6 +2,7 @@ This is a project from the course Ramverk1 at BTH.
 =================================
 
 [![Build Status](https://travis-ci.org/theEmelie/ramverk1-project.svg?branch=master)](https://travis-ci.org/theEmelie/ramverk1-project)
+[![CircleCI](https://circleci.com/gh/theEmelie/ramverk1-project.svg?style=svg)](https://circleci.com/gh/theEmelie/ramverk1-project)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/theEmelie/ramverk1-project/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/theEmelie/ramverk1-project/?branch=master)
 [![Maintainability](https://api.codeclimate.com/v1/badges/95c3f212d0861aaa7a85/maintainability)](https://codeclimate.com/github/theEmelie/ramverk1-project/maintainability)
 
