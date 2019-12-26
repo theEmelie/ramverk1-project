@@ -9,7 +9,7 @@ How to install
 ------------------------------------
 * Get the code: `git clone https://github.com/theEmelie/ramverk1-project.git`
 * Create a database: `sqlite3 data/db.sqlite`
-* Insert these tables into the database:
+* Insert these tables into the database:  
 `sqlite3 data/db.sqlite < sql/ddl/user_sqlite.sql`  
 `sqlite3 data/db.sqlite < sql/ddl/answers_sqlite.sql`  
 `sqlite3 data/db.sqlite < sql/ddl/questions_sqlite.sql`  
