@@ -16,6 +16,7 @@ use Anax\User\User;
 use Anax\Answers\Answers;
 use Anax\QComments\QComments;
 use Anax\AComments\AComments;
+use Anax\Textfilter\MyTextfilter;
 
 // use Anax\Route\Exception\ForbiddenException;
 // use Anax\Route\Exception\NotFoundException;
@@ -28,6 +29,17 @@ class QuestionsController implements ContainerInjectableInterface
 {
     use ContainerInjectableTrait;
 
+    /**
+    * Function to run markdown textfilter on text
+    *  @return string
+    */
+    public function runMarkdown($text)
+    {
+        $myTextFilter = new MyTextfilter();
+
+        $text = $myTextFilter->parse($text, "markdown");
+        return $text;
+    }
 
     public function indexAction() : object
     {
@@ -51,6 +63,10 @@ class QuestionsController implements ContainerInjectableInterface
             $que->username = $user->acronym;
 
             $que->tagNames = $this->getTagNames($que->id);
+
+            // Run markdown on questions text and title
+            $que->text = $this->runMarkdown($que->text);
+            // $que->title = $this->runMarkdown($que->title);
         }
 
         $page->add("questions/viewAll", [
@@ -169,6 +185,9 @@ class QuestionsController implements ContainerInjectableInterface
         $question->setDb($this->di->get("dbqb"));
         $res = $question->getQuestionById($qid);
 
+        // Run markdown on view questions
+        $question->text = $this->runMarkdown($question->text);
+
         // Find all comments
         $qComment = new QComments();
         $qComment->setDb($this->di->get("dbqb"));
@@ -180,6 +199,9 @@ class QuestionsController implements ContainerInjectableInterface
             $res = $comUser->getUserDataById($com->userId);
 
             $com->username = $comUser->acronym;
+
+            // Run markdown on question comments text
+            $com->text = $this->runMarkdown($com->text);
         }
 
         $question->comments = $qComments;
@@ -211,12 +233,18 @@ class QuestionsController implements ContainerInjectableInterface
             $aComment->setDb($this->di->get("dbqb"));
             $aComments = $aComment->getAllaCommentsByAnswerId($ans->id);
 
+            // Run markdown on answers text
+            $ans->text = $this->runMarkdown($ans->text);
+
             foreach ($aComments as $com) {
                 $comUser = new User();
                 $comUser->setDb($this->di->get("dbqb"));
                 $res = $comUser->getUserDataById($com->userId);
 
                 $com->username = $comUser->acronym;
+
+                // Run markdown on answer comments text
+                $com->text = $this->runMarkdown($com->text);
             }
 
             $ans->comments = $aComments;
