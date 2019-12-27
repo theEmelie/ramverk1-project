@@ -43,4 +43,18 @@ class Questions extends ActiveRecordModel
     {
         return $this->findAllWhere("userId = ?", $uid);
     }
+
+    private static function sortByDateDESC($first, $second)
+    {
+        return $first->updated < $second->updated;
+    }
+
+    public function getAllQuestionsByDateDesc($limit)
+    {
+        $questions = $this->findAll();
+        usort($questions, array($this, 'sortByDateDESC'));
+        $slicedQuestions = array_slice($questions, 0, $limit);
+
+        return $slicedQuestions;
+    }
 }

@@ -210,9 +210,9 @@ class UserController implements ContainerInjectableInterface
     {
         $page = $this->di->get("page");
         $session = $this->di->get("session");
-        $username = $session->get("acronym");
+        $loggedInUser = $session->get("acronym");
 
-        if ($username == "") {
+        if ($loggedInUser == "") {
             $response = $this->di->get("response");
             $response->redirect("user/login");
         }

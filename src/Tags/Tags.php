@@ -44,4 +44,14 @@ class Tags extends ActiveRecordModel
     {
         return $this->findAll();
     }
+
+    public function getMostPopularTags($di, $limit)
+    {
+        $dbqb = $di->get("dbqb");
+        $dbqb->connect();
+        $sql = "SELECT tags.id, tags.tag, count(tags.tag) as TagCount from TagsQuestions LEFT JOIN tags ON tagId = tags.id GROUP BY tags.tag ORDER BY TagCount DESC LIMIT ?;";
+        $res = $dbqb->executeFetchAll($sql, [$limit]);
+
+        return $res;
+    }
 }

@@ -63,10 +63,6 @@ class QuestionsController implements ContainerInjectableInterface
             $que->username = $user->acronym;
 
             $que->tagNames = $this->getTagNames($que->id);
-
-            // Run markdown on questions text and title
-            $que->text = $this->runMarkdown($que->text);
-            // $que->title = $this->runMarkdown($que->title);
         }
 
         $page->add("questions/viewAll", [

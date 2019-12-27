@@ -1,5 +1,5 @@
 --
--- Answers Questions
+-- Table Answers
 --
 DROP TABLE IF EXISTS Answers;
 CREATE TABLE Answers (

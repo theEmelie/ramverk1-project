@@ -5,9 +5,11 @@ namespace Anax\Frontpage;
 use Anax\Commons\ContainerInjectableInterface;
 use Anax\Commons\ContainerInjectableTrait;
 
-// use Anax\Route\Exception\ForbiddenException;
-// use Anax\Route\Exception\NotFoundException;
-// use Anax\Route\Exception\InternalErrorException;
+use Anax\Tags\Tags;
+use Anax\TagsQuestions\TagsQuestions;
+use Anax\User\User;
+use Anax\Questions\Questions;
+use Anax\Textfilter\MyTextfilter;
 
 /**
  * @SuppressWarnings(PHPMD.TooManyPublicMethods)
@@ -15,6 +17,83 @@ use Anax\Commons\ContainerInjectableTrait;
 class FrontpageController implements ContainerInjectableInterface
 {
     use ContainerInjectableTrait;
+
+    /**
+    * Function to run markdown textfilter on text
+    *  @return string
+    */
+    public function runMarkdown($text)
+    {
+        $myTextFilter = new MyTextfilter();
+
+        $text = $myTextFilter->parse($text, "markdown");
+        return $text;
+    }
+
+    // public function sortByDateDESC($first, $second)
+    // {
+    //     return $first->updated > $second->updated;
+    // }
+
+    public function getTagNames($qid)
+    {
+        // Get tags for question
+        $tqObj = new TagsQuestions();
+        $tqObj->setDb($this->di->get("dbqb"));
+        $tagsQuestions = $tqObj->getAllByQuestionId($qid);
+        $tagNames = array();
+
+        foreach ($tagsQuestions as $tqs) {
+            $tagObj = new Tags();
+            $tagObj->setDb($this->di->get("dbqb"));
+            $tagObj->getTagById($tqs->tagId);
+            array_push($tagNames, $tagObj->tag);
+        }
+
+        return $tagNames;
+    }
+
+    public function indexAction() : object
+    {
+        $page = $this->di->get("page");
+        $session = $this->di->get("session");
+
+        $question = new Questions();
+        $question->setDb($this->di->get("dbqb"));
+        $limit = 3;
+        $questions = $question->getAllQuestionsByDateDesc($limit);
+
+        foreach ($questions as $que) {
+            $user = new User();
+            $user->setDb($this->di->get("dbqb"));
+            $user->getUserDataById($que->userId);
+            $que->username = $user->acronym;
+
+            $que->tagNames = $this->getTagNames($que->id);
+        }
+
+        // Get most popular tags
+        $limit = 3;
+        $tagObj = new Tags();
+        $tagObj->setDb($this->di->get("dbqb"));
+        $popularTags = $tagObj->getMostPopularTags($this->di, $limit);
+        // var_dump($res);
+
+        // Get most active users
+        $userActivity = $user->getUserActivity($this->di, $limit);
+        // var_dump($userActivity);
+
+        $page->add("frontpage/view", [
+            "questions" => $questions,
+            "popularTags" => $popularTags,
+            "userActivity" => $userActivity
+        ]);
+
+        return $page->render([
+            "title" => "FurQuestions",
+        ]);
+    }
+
 
 
     /**

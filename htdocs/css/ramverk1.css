@@ -5870,6 +5870,7 @@ textarea {
   background-color: #ddd;
   border-radius: 10px;
   margin-right: 3px;
+  block: inline;
 }
 /**
 * Comments
@@ -5889,6 +5890,17 @@ textarea {
 .makeComment {
   margin-left: 88.4%;
   margin-top: 0.5em;
+}
+/**
+* Frontpage
+*/
+.recentQuestions {
+  float: left;
+  width: 60%;
+}
+.sidebar {
+  float: right;
+  width: 35%;
 }
 /**
  * Layout for responsive style through media queries.

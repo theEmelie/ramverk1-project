@@ -1,5 +1,5 @@
 --
--- Answers Questions
+-- Table AnswersComments
 --
 DROP TABLE IF EXISTS AnswerComments;
 CREATE TABLE AnswerComments (

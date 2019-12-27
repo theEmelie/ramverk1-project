@@ -15,6 +15,6 @@ namespace Anax\View;
 <h2>All Questions Answered by <?= $username ?></h2>
 <ul>
     <?php foreach ($answers as $ans) { ?>
-    <li><a href="../../questions/view/<?= $ans->question_id ?>"><?= $ans->questionTitle ?></a><span class="date">(<?= $ans->updated ?>) </span></li>
+    <li><a href="../../questions/view/<?= $ans->questionId ?>"><?= $ans->questionTitle ?></a><span class="date">(<?= $ans->updated ?>) </span></li>
     <?php } ?>
 </ul>
