@@ -153,11 +153,26 @@ tr:nth-child(even) {
 * Question Page
 */
 
+.numAnswers,
+.numVotes {
+    font-size: 14px;
+    display: inline;
+}
+
+
 .author {
     font-size: 14px;
+    display: block;
 }
 
 .date {
+    font-size: 14px;
+    font-style: italic;
+    display: block;
+    // margin-bottom: 15px;
+}
+
+.dateForum {
     font-size: 14px;
     font-style: italic;
     display: block;
@@ -269,4 +284,11 @@ textarea {
 .sidebar {
     float: right;
     width: 35%;
+}
+
+.accepted {
+    display: block;
+    color: darkgreen;
+    font-weight: bold;
+    font-size: 14px;
 }

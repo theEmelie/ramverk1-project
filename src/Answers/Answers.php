@@ -23,6 +23,7 @@ class Answers extends ActiveRecordModel
     public $userId;
     public $questionId;
     public $text;
+    public $accepted;
     public $created;
     public $updated;
     public $deleted;
@@ -36,5 +37,10 @@ class Answers extends ActiveRecordModel
     public function getAllAnswersByUserId($uid)
     {
         return $this->findAllWhere("userId = ?", $uid);
+    }
+
+    public function getAnswerById($aid)
+    {
+        return $this->find("id", $aid);
     }
 }

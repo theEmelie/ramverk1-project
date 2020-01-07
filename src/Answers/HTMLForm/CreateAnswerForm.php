@@ -67,6 +67,7 @@ class CreateAnswerForm extends FormModel
 
             $answer->userId = $session->get("userId");
             $answer->text = $text;
+            $answer->accepted = false;
             $answer->questionId = $questionId;
             $answer->created = date("Y-m-d H:i:s");
             $answer->updated = $answer->created;

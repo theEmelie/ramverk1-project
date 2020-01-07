@@ -122,6 +122,7 @@ class User extends ActiveRecordModel
         // var_dump($qcCount);
         // var_dump($acCount);
 
+        // Push all fields into output array to see user activity.
         $output = $qCount;
         foreach ($qCount as $user) {
             $userFound = false;
@@ -152,6 +153,7 @@ class User extends ActiveRecordModel
                 array_push($output, $user);
             }
         }
+
         foreach ($qcCount as $user) {
             $userFound = false;
             foreach ($output as $out) {

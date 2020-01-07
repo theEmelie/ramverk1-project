@@ -7,6 +7,7 @@ CREATE TABLE Answers (
     "userId" INTEGER NOT NULL,
     "questionId" INTEGER NOT NULL,
     "text" TEXT NOT NULL,
+    "accepted" BOOLEAN,
     "created" DATETIME,
     "updated" DATETIME,
     "deleted" DATETIME,

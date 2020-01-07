@@ -57,4 +57,28 @@ class Questions extends ActiveRecordModel
 
         return $slicedQuestions;
     }
+
+    public function getNumberOfAnswers($di, $qid)
+    {
+        $dbqb = $di->get("dbqb");
+        $dbqb->connect();
+        $sql = "SELECT * FROM Answers WHERE questionId = ?;";
+        $res = $dbqb->executeFetchAll($sql, [$qid]);
+
+        return count($res);
+    }
+
+    public function getVoteCount($di, $qid)
+    {
+        $dbqb = $di->get("dbqb");
+        $dbqb->connect();
+        $sql = "SELECT SUM(vote) AS voteCount FROM QuestionVotes WHERE questionId = ?;";
+        $res = $dbqb->executeFetchAll($sql, [$qid]);
+
+        if ($res[0]->voteCount == null) {
+            $res[0]->voteCount = 0;
+        }
+
+        return $res[0]->voteCount;
+    }
 }

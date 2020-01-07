@@ -18,6 +18,11 @@ use Anax\QComments\QComments;
 use Anax\AComments\AComments;
 use Anax\Textfilter\MyTextfilter;
 
+use Anax\QuestionVotes\QuestionVotes;
+use Anax\AnswerVotes\AnswerVotes;
+use Anax\AnswerCommentVotes\AnswerCommentVotes;
+use Anax\QuestionCommentVotes\QuestionCommentVotes;
+
 // use Anax\Route\Exception\ForbiddenException;
 // use Anax\Route\Exception\NotFoundException;
 // use Anax\Route\Exception\InternalErrorException;
@@ -63,6 +68,8 @@ class QuestionsController implements ContainerInjectableInterface
             $que->username = $user->acronym;
 
             $que->tagNames = $this->getTagNames($que->id);
+            $que->numberOfAnswers = $question->getNumberOfAnswers($this->di, $que->id);
+            $que->voteCount = $question->getVoteCount($this->di, $que->id);
         }
 
         $page->add("questions/viewAll", [
@@ -171,6 +178,7 @@ class QuestionsController implements ContainerInjectableInterface
         $page = $this->di->get("page");
         $session = $this->di->get("session");
         $username = $session->get("acronym");
+        $userSessionId = $session->get("userId");
 
         if ($username == "") {
             $response = $this->di->get("response");
@@ -183,6 +191,16 @@ class QuestionsController implements ContainerInjectableInterface
 
         // Run markdown on view questions
         $question->text = $this->runMarkdown($question->text);
+
+        $questionVotes = new QuestionVotes();
+        $questionVotes->setDb($this->di->get("dbqb"));
+        $res = $questionVotes->countVoteForQid($this->di, $qid);
+
+        if ($res->voteCount == null) {
+            $res->voteCount = 0;
+        }
+
+        $question->voteCount = $res->voteCount;
 
         // Find all comments
         $qComment = new QComments();
@@ -198,6 +216,16 @@ class QuestionsController implements ContainerInjectableInterface
 
             // Run markdown on question comments text
             $com->text = $this->runMarkdown($com->text);
+
+            $questionCommentVotes = new QuestionCommentVotes();
+            $questionCommentVotes->setDb($this->di->get("dbqb"));
+            $res = $questionCommentVotes->countVoteForQCid($this->di, $com->id);
+
+            if ($res->voteCount == null) {
+                $res->voteCount = 0;
+            }
+
+            $com->voteCount = $res->voteCount;
         }
 
         $question->comments = $qComments;
@@ -241,14 +269,41 @@ class QuestionsController implements ContainerInjectableInterface
 
                 // Run markdown on answer comments text
                 $com->text = $this->runMarkdown($com->text);
+
+                $answerCommentVotes = new AnswerCommentVotes();
+                $answerCommentVotes->setDb($this->di->get("dbqb"));
+                $res = $answerCommentVotes->countVoteForACid($this->di, $com->id);
+
+                if ($res->voteCount == null) {
+                    $res->voteCount = 0;
+                }
+
+                $com->voteCount = $res->voteCount;
             }
+
+            $answerVotes = new AnswerVotes();
+            $answerVotes->setDb($this->di->get("dbqb"));
+            $res = $answerVotes->countVoteForAid($this->di, $ans->id);
+
+            if ($res->voteCount == null) {
+                $res->voteCount = 0;
+            }
+
+            $ans->voteCount = $res->voteCount;
 
             $ans->comments = $aComments;
         }
 
+        if ($question->userId == $userSessionId) {
+            $isAuthor = true;
+        } else {
+            $isAuthor = false;
+        }
+
         $page->add("questions/view", [
             "question" => $question,
-            "answers" => $answers
+            "answers" => $answers,
+            "isAuthor" => $isAuthor
         ]);
 
         return $page->render([
@@ -333,6 +388,184 @@ class QuestionsController implements ContainerInjectableInterface
             "title" => "Comment Answer",
         ]);
     }
+
+    public function markAcceptedAnswerAction($questionId, $answerId)
+    {
+        $page = $this->di->get("page");
+        $response = $this->di->get("response");
+        $session = $this->di->get("session");
+        $username = $session->get("acronym");
+
+        if ($username == "") {
+            $response->redirect("user/login");
+        }
+
+        $answerObj = new Answers();
+        $answerObj->setDb($this->di->get("dbqb"));
+        $answerObj->getAnswerById($answerId);
+
+        $answerObj->accepted = true;
+        $answerObj->save();
+
+        $response->redirect("questions/view/$questionId");
+    }
+
+    public function upVoteAction($questionId)
+    {
+        $page = $this->di->get("page");
+        $response = $this->di->get("response");
+        $session = $this->di->get("session");
+        $username = $session->get("acronym");
+        $userId = $session->get("userId");
+
+        if ($username == "") {
+            $response->redirect("user/login");
+        }
+
+        $qvObj = new QuestionVotes();
+        $qvObj->setDb($this->di->get("dbqb"));
+        $qvObj->upVoteQuestion($this->di, $questionId, $userId);
+
+        $response->redirect("questions/view/$questionId");
+    }
+
+    public function downVoteAction($questionId)
+    {
+        $page = $this->di->get("page");
+        $response = $this->di->get("response");
+        $session = $this->di->get("session");
+        $username = $session->get("acronym");
+        $userId = $session->get("userId");
+
+        if ($username == "") {
+            $response->redirect("user/login");
+        }
+
+        $qvObj = new QuestionVotes();
+        $qvObj->setDb($this->di->get("dbqb"));
+        $qvObj->downVoteQuestion($this->di, $questionId, $userId);
+
+        $response->redirect("questions/view/$questionId");
+    }
+
+    public function upVoteAnswerAction($questionId, $answerId)
+    {
+        $page = $this->di->get("page");
+        $response = $this->di->get("response");
+        $session = $this->di->get("session");
+        $username = $session->get("acronym");
+        $userId = $session->get("userId");
+
+        if ($username == "") {
+            $response->redirect("user/login");
+        }
+
+        $avObj = new AnswerVotes();
+        $avObj->setDb($this->di->get("dbqb"));
+        $avObj->upVoteAnswer($this->di, $answerId, $userId);
+
+        $response->redirect("questions/view/$questionId");
+    }
+
+    public function downVoteAnswerAction($questionId, $answerId)
+    {
+        $page = $this->di->get("page");
+        $response = $this->di->get("response");
+        $session = $this->di->get("session");
+        $username = $session->get("acronym");
+        $userId = $session->get("userId");
+
+        if ($username == "") {
+            $response->redirect("user/login");
+        }
+
+        $avObj = new AnswerVotes();
+        $avObj->setDb($this->di->get("dbqb"));
+        $avObj->downVoteAnswer($this->di, $answerId, $userId);
+
+        $response->redirect("questions/view/$questionId");
+    }
+
+    public function upVoteAnswerCommentAction($questionId, $acId)
+    {
+        $page = $this->di->get("page");
+        $response = $this->di->get("response");
+        $session = $this->di->get("session");
+        $username = $session->get("acronym");
+        $userId = $session->get("userId");
+
+        if ($username == "") {
+            $response->redirect("user/login");
+        }
+
+        $obj = new AnswerCommentVotes();
+        $obj->setDb($this->di->get("dbqb"));
+        $obj->upVoteAnswerComment($this->di, $acId, $userId);
+
+        $response->redirect("questions/view/$questionId");
+    }
+
+    public function downVoteAnswerCommentAction($questionId, $acId)
+    {
+        $page = $this->di->get("page");
+        $response = $this->di->get("response");
+        $session = $this->di->get("session");
+        $username = $session->get("acronym");
+        $userId = $session->get("userId");
+
+        if ($username == "") {
+            $response->redirect("user/login");
+        }
+
+        $obj = new AnswerCommentVotes();
+        $obj->setDb($this->di->get("dbqb"));
+        $obj->downVoteAnswerComment($this->di, $acId, $userId);
+
+        $response->redirect("questions/view/$questionId");
+    }
+
+    public function upVoteQuestionCommentAction($questionId, $qcId)
+    {
+        $page = $this->di->get("page");
+        $response = $this->di->get("response");
+        $session = $this->di->get("session");
+        $username = $session->get("acronym");
+        $userId = $session->get("userId");
+
+        if ($username == "") {
+            $response->redirect("user/login");
+        }
+
+        $obj = new QuestionCommentVotes();
+        $obj->setDb($this->di->get("dbqb"));
+        $obj->upVoteQuestionComment($this->di, $qcId, $userId);
+
+        $response->redirect("questions/view/$questionId");
+    }
+
+    public function downVoteQuestionCommentAction($questionId, $qcId)
+    {
+        $page = $this->di->get("page");
+        $response = $this->di->get("response");
+        $session = $this->di->get("session");
+        $username = $session->get("acronym");
+        $userId = $session->get("userId");
+
+        if ($username == "") {
+            $response->redirect("user/login");
+        }
+
+        $obj = new QuestionCommentVotes();
+        $obj->setDb($this->di->get("dbqb"));
+        $obj->downVoteQuestionComment($this->di, $qcId, $userId);
+
+        $response->redirect("questions/view/$questionId");
+    }
+
+
+
+
+
     /**
      * Adding an optional catchAll() method will catch all actions sent to the
      * router. You can then reply with an actual response or return void to
