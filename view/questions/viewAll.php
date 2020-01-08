@@ -8,7 +8,7 @@ namespace Anax\View;
 <?php
 foreach (array_reverse($questions) as $que) { ?>
     <div class="question">
-        <a href="questions/view/<?=$que->id ?>"><h3 class="queTitle"> <?= $que->title ?> </h3></a>
+        <a href="questions/view/<?=$que->id ?>/date"><h3 class="queTitle"> <?= $que->title ?> </h3></a>
 
         <span class="numAnswers">(<?= $que->numberOfAnswers ?> Answers)</span>
         <span class="numVotes">(<?= $que->voteCount ?> Votes)</span>

@@ -11,7 +11,7 @@ foreach ($questions as $que) { ?>
     <div class="question">
         <a href="questions/view/<?=$que->id ?>"><h3 class="queTitle"> <?= $que->title ?> </h3></a>
         <span class="author">Asked by: <a href="user/view/<?=$que->username?>"><?= $que->username ?></a></span>
-        <span class="date">Last updated: <?= $que->updated ?></span>
+        <span class="dateForum">Last updated: <?= $que->updated ?></span>
         <span class="tags">
             <?php foreach ($que->tagNames as $tag) {
                 echo "<a href='questions/viewTag/". $tag . "'><span class='tagName'>" . $tag . "</span></a>" ;

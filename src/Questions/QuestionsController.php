@@ -173,7 +173,7 @@ class QuestionsController implements ContainerInjectableInterface
         return $tagNames;
     }
 
-    public function viewAction($qid)
+    public function viewAction($qid, $sort)
     {
         $page = $this->di->get("page");
         $session = $this->di->get("session");
@@ -294,6 +294,13 @@ class QuestionsController implements ContainerInjectableInterface
             $ans->comments = $aComments;
         }
 
+        if ($sort == 'date') {
+            usort($answers, array($this, 'sortByDateDESC'));
+        } else if ($sort == 'rank') {
+            usort($answers, array($this, 'sortByRankDESC'));
+        }
+        // var_dump($answers);
+
         if ($question->userId == $userSessionId) {
             $isAuthor = true;
         } else {
@@ -309,6 +316,16 @@ class QuestionsController implements ContainerInjectableInterface
         return $page->render([
             "title" => "View Question",
         ]);
+    }
+
+    private static function sortByDateDESC($first, $second)
+    {
+        return $first->updated < $second->updated;
+    }
+
+    private static function sortByRankDESC($first, $second)
+    {
+        return $first->voteCount < $second->voteCount;
     }
 
     public function answerAction($questionId) : object
@@ -407,7 +424,7 @@ class QuestionsController implements ContainerInjectableInterface
         $answerObj->accepted = true;
         $answerObj->save();
 
-        $response->redirect("questions/view/$questionId");
+        $response->redirect("questions/view/$questionId/date");
     }
 
     public function upVoteAction($questionId)
@@ -426,7 +443,7 @@ class QuestionsController implements ContainerInjectableInterface
         $qvObj->setDb($this->di->get("dbqb"));
         $qvObj->upVoteQuestion($this->di, $questionId, $userId);
 
-        $response->redirect("questions/view/$questionId");
+        $response->redirect("questions/view/$questionId/date");
     }
 
     public function downVoteAction($questionId)
@@ -445,7 +462,7 @@ class QuestionsController implements ContainerInjectableInterface
         $qvObj->setDb($this->di->get("dbqb"));
         $qvObj->downVoteQuestion($this->di, $questionId, $userId);
 
-        $response->redirect("questions/view/$questionId");
+        $response->redirect("questions/view/$questionId/date");
     }
 
     public function upVoteAnswerAction($questionId, $answerId)
@@ -464,7 +481,7 @@ class QuestionsController implements ContainerInjectableInterface
         $avObj->setDb($this->di->get("dbqb"));
         $avObj->upVoteAnswer($this->di, $answerId, $userId);
 
-        $response->redirect("questions/view/$questionId");
+        $response->redirect("questions/view/$questionId/date");
     }
 
     public function downVoteAnswerAction($questionId, $answerId)
@@ -483,7 +500,7 @@ class QuestionsController implements ContainerInjectableInterface
         $avObj->setDb($this->di->get("dbqb"));
         $avObj->downVoteAnswer($this->di, $answerId, $userId);
 
-        $response->redirect("questions/view/$questionId");
+        $response->redirect("questions/view/$questionId/date");
     }
 
     public function upVoteAnswerCommentAction($questionId, $acId)
@@ -502,7 +519,7 @@ class QuestionsController implements ContainerInjectableInterface
         $obj->setDb($this->di->get("dbqb"));
         $obj->upVoteAnswerComment($this->di, $acId, $userId);
 
-        $response->redirect("questions/view/$questionId");
+        $response->redirect("questions/view/$questionId/date");
     }
 
     public function downVoteAnswerCommentAction($questionId, $acId)
@@ -521,7 +538,7 @@ class QuestionsController implements ContainerInjectableInterface
         $obj->setDb($this->di->get("dbqb"));
         $obj->downVoteAnswerComment($this->di, $acId, $userId);
 
-        $response->redirect("questions/view/$questionId");
+        $response->redirect("questions/view/$questionId/date");
     }
 
     public function upVoteQuestionCommentAction($questionId, $qcId)
@@ -540,7 +557,7 @@ class QuestionsController implements ContainerInjectableInterface
         $obj->setDb($this->di->get("dbqb"));
         $obj->upVoteQuestionComment($this->di, $qcId, $userId);
 
-        $response->redirect("questions/view/$questionId");
+        $response->redirect("questions/view/$questionId/date");
     }
 
     public function downVoteQuestionCommentAction($questionId, $qcId)
@@ -559,7 +576,7 @@ class QuestionsController implements ContainerInjectableInterface
         $obj->setDb($this->di->get("dbqb"));
         $obj->downVoteQuestionComment($this->di, $qcId, $userId);
 
-        $response->redirect("questions/view/$questionId");
+        $response->redirect("questions/view/$questionId/date");
     }
 
 
