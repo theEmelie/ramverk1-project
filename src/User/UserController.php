@@ -12,6 +12,8 @@ use Anax\User\HTMLForm\UserChangeEmailForm;
 
 use Anax\Answers\Answers;
 use Anax\Questions\Questions;
+use Anax\QComments\QComments;
+use Anax\AComments\AComments;
 
 // use Anax\Route\Exception\ForbiddenException;
 // use Anax\Route\Exception\NotFoundException;
@@ -72,10 +74,6 @@ class UserController implements ContainerInjectableInterface
         $user->getUserData($username);
 
         $grav = $this->getGravatar($user->email);
-
-        // Get all questions asked by user
-
-        // Get all answers posted by user
 
         $page->add("user/view", [
             "username" => $user->acronym,
@@ -234,10 +232,48 @@ class UserController implements ContainerInjectableInterface
             $ans->questionTitle = $question->title;
         }
 
+        $questionComment = new QComments();
+        $questionComment->setDb($this->di->get("dbqb"));
+        $questionComments = $questionComment->getAllqCommentsByUserId($user->id);
+
+        foreach ($questionComments as $com) {
+            $res = $question->getQuestionById($com->questionId);
+            $com->questionTitle = $question->title;
+        }
+
+        $answerComment = new AComments();
+        $answerComment->setDb($this->di->get("dbqb"));
+        $answerComments = $answerComment->getAllaCommentsByUserId($user->id);
+
+        foreach ($answerComments as $com) {
+            $res = $question->getQuestionTitleByAnswerId($this->di, $com->answerId);
+            $com->questionTitle = $res->questionTitle;
+            $com->questionId = $res->questionId;
+        }
+
+        $questionStats = $user->getQuestionStatsByUserId($this->di, $user->id);
+        $answerStats = $user->getAnswerStatsByUserId($this->di, $user->id);
+        $answerCommentStats = $user->getAnswerCommentStatsByUserId($this->di, $user->id);
+        $questionCommentStats = $user->getQuestionCommentStatsByUserId($this->di, $user->id);
+
+        // Answer Stats weight of 3, Question Stats weight of 2, All comment weight of 1.
+        $answerWeight = 3;
+        $questionWeight = 2;
+        $commentWeight = 1;
+
+        $reputation = $answerStats["rank"] * $answerWeight + $answerStats["num"] * $answerWeight +
+                    $questionStats["rank"] * $questionWeight + $questionStats["num"] * $questionWeight +
+                    $answerCommentStats["rank"] * $commentWeight + $answerCommentStats["num"] * $commentWeight +
+                    $questionCommentStats["rank"] * $commentWeight + $questionCommentStats["num"] * $commentWeight;
+
+
         $page->add("user/viewPosts", [
             "questions" => $questions,
             "answers" => $answers,
-            "username" => $username
+            "username" => $username,
+            "reputation" => $reputation,
+            "qComments" => $questionComments,
+            "aComments" => $answerComments
         ]);
 
         return $page->render([

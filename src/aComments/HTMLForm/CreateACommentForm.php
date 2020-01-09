@@ -79,7 +79,7 @@ class CreateACommentForm extends FormModel
             $aComments->active = $aComments->created;
             $aComments->save();
 
-            $response->redirect("questions/view/$questionId");
+            $response->redirect("questions/view/$questionId/date");
             // var_dump($aComments);
         } else {
             return false;

@@ -9,7 +9,7 @@ namespace Anax\View;
 <?php
 foreach ($questions as $que) { ?>
     <div class="question">
-        <a href="questions/view/<?=$que->id ?>"><h3 class="queTitle"> <?= $que->title ?> </h3></a>
+        <a href="questions/view/<?=$que->id ?>/date"><h3 class="queTitle"> <?= $que->title ?> </h3></a>
         <span class="author">Asked by: <a href="user/view/<?=$que->username?>"><?= $que->username ?></a></span>
         <span class="dateForum">Last updated: <?= $que->updated ?></span>
         <span class="tags">

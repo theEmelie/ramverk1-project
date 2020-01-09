@@ -65,6 +65,10 @@ class User extends ActiveRecordModel
         $this->find("id", $id);
     }
 
+    /**
+    * @SuppressWarnings(PHPMD.UnusedPrivateMethod)
+    * Used as a callback function by usort
+    */
     private static function compareActivity($first, $second)
     {
         return $first->activityCount < $second->activityCount;
@@ -110,20 +114,8 @@ class User extends ActiveRecordModel
         return $res;
     }
 
-    public function getUserActivity($di, $limit)
+    private function processQCount($qCount, $output)
     {
-        $qCount = $this->getQuestionActivity($di);
-        $aCount = $this->getAnswerActivity($di);
-        $qcCount = $this->getQCommentActivity($di);
-        $acCount = $this->getACommentActivity($di);
-
-        // var_dump($qCount);
-        // var_dump($aCount);
-        // var_dump($qcCount);
-        // var_dump($acCount);
-
-        // Push all fields into output array to see user activity.
-        $output = $qCount;
         foreach ($qCount as $user) {
             $userFound = false;
             foreach ($output as $out) {
@@ -139,6 +131,11 @@ class User extends ActiveRecordModel
             }
         }
 
+        return $output;
+    }
+
+    private function processACount($aCount, $output)
+    {
         foreach ($aCount as $user) {
             $userFound = false;
             foreach ($output as $out) {
@@ -154,6 +151,11 @@ class User extends ActiveRecordModel
             }
         }
 
+        return $output;
+    }
+
+    private function processQCCount($qcCount, $output)
+    {
         foreach ($qcCount as $user) {
             $userFound = false;
             foreach ($output as $out) {
@@ -169,6 +171,11 @@ class User extends ActiveRecordModel
             }
         }
 
+        return $output;
+    }
+
+    private function processACCount($acCount, $output)
+    {
         foreach ($acCount as $user) {
             $userFound = false;
             foreach ($output as $out) {
@@ -183,10 +190,96 @@ class User extends ActiveRecordModel
                 array_push($output, $user);
             }
         }
+        return $output;
+    }
+
+    public function getUserActivity($di, $limit)
+    {
+        $qCount = $this->getQuestionActivity($di);
+        $aCount = $this->getAnswerActivity($di);
+        $qcCount = $this->getQCommentActivity($di);
+        $acCount = $this->getACommentActivity($di);
+
+        // Push all fields into output array to see user activity.
+        $output = $qCount;
+
+        $output = $this->processQCount($qCount, $output);
+        $output = $this->processACount($aCount, $output);
+        $output = $this->processQCCount($qcCount, $output);
+        $output = $this->processACCount($acCount, $output);
+
 
         usort($output, array($this, 'compareActivity'));
         $topActivity = array_slice($output, 0, $limit);
 
         return $topActivity;
+    }
+
+    public function getQuestionStatsByUserId($di, $uid)
+    {
+        $dbqb = $di->get("dbqb");
+        $dbqb->connect();
+        $sql = "SELECT sum(vote) AS rank FROM Questions INNER JOIN QuestionVotes ON Questions.id = QuestionVotes.userId WHERE Questions.userId = ?;";
+        $res = $dbqb->executeFetchAll($sql, [$uid]);
+
+        $stats["rank"] = $res[0]->rank;
+
+        $sql = "SELECT count(id) AS num FROM Questions WHERE userId = ?;";
+        $res = $dbqb->executeFetchAll($sql, [$uid]);
+
+        $stats["num"] = $res[0]->num;
+
+        return $stats;
+    }
+
+    public function getAnswerStatsByUserId($di, $uid)
+    {
+        $dbqb = $di->get("dbqb");
+        $dbqb->connect();
+        $sql = "SELECT sum(vote) AS rank FROM Answers INNER JOIN AnswerVotes ON Answers.id = AnswerVotes.userId WHERE Answers.userId = ?;";
+        $res = $dbqb->executeFetchAll($sql, [$uid]);
+
+        $stats["rank"] = $res[0]->rank;
+
+        $sql = "SELECT count(id) AS num FROM Answers WHERE userId = ?;";
+        $res = $dbqb->executeFetchAll($sql, [$uid]);
+
+        $stats["num"] = $res[0]->num;
+
+        return $stats;
+    }
+
+    public function getAnswerCommentStatsByUserId($di, $uid)
+    {
+        $dbqb = $di->get("dbqb");
+        $dbqb->connect();
+        $sql = "SELECT sum(vote) AS rank FROM AnswerComments INNER JOIN AnswerCommentVotes ON AnswerComments.id = AnswerCommentVotes.userId WHERE AnswerComments.userId = ?;";
+        $res = $dbqb->executeFetchAll($sql, [$uid]);
+
+        $stats["rank"] = $res[0]->rank;
+
+        $sql = "SELECT count(id) AS num FROM AnswerComments WHERE userId = ?;";
+        $res = $dbqb->executeFetchAll($sql, [$uid]);
+
+        $stats["num"] = $res[0]->num;
+
+        return $stats;
+    }
+
+    public function getQuestionCommentStatsByUserId($di, $uid)
+    {
+        $dbqb = $di->get("dbqb");
+        $dbqb->connect();
+        $sql = "SELECT sum(vote) AS rank FROM QuestionComments INNER JOIN QuestionCommentVotes ON QuestionComments.id = QuestionCommentVotes.userId WHERE QuestionComments.userId = ?;";
+        $res = $dbqb->executeFetchAll($sql, [$uid]);
+
+        $stats["rank"] = $res[0]->rank;
+
+        $sql = "SELECT count(id) AS num FROM QuestionComments WHERE userId = ?;";
+        $res = $dbqb->executeFetchAll($sql, [$uid]);
+
+        $stats["num"] = $res[0]->num;
+
+        return $stats;
     }
 }

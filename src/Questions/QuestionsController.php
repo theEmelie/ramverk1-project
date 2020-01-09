@@ -1,5 +1,4 @@
 <?php
-
 namespace Anax\Questions;
 
 use Anax\Commons\ContainerInjectableInterface;
@@ -23,12 +22,10 @@ use Anax\AnswerVotes\AnswerVotes;
 use Anax\AnswerCommentVotes\AnswerCommentVotes;
 use Anax\QuestionCommentVotes\QuestionCommentVotes;
 
-// use Anax\Route\Exception\ForbiddenException;
-// use Anax\Route\Exception\NotFoundException;
-// use Anax\Route\Exception\InternalErrorException;
-
 /**
  * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * This is a central class that everything is based off, therefor has a high coupling.
  */
 class QuestionsController implements ContainerInjectableInterface
 {
@@ -173,6 +170,24 @@ class QuestionsController implements ContainerInjectableInterface
         return $tagNames;
     }
 
+    private function getQComments($qid)
+    {
+        // Find all comments
+        $qComment = new QComments();
+        $qComment->setDb($this->di->get("dbqb"));
+
+        return $qComment->getQComment($this->di, $qid);
+    }
+
+    private function getAcomments($aid)
+    {
+        // Find all comments for answer
+        $aComment = new AComments();
+        $aComment->setDb($this->di->get("dbqb"));
+
+        return $aComment->getAComment($this->di, $aid);
+    }
+
     public function viewAction($qid, $sort)
     {
         $page = $this->di->get("page");
@@ -202,33 +217,7 @@ class QuestionsController implements ContainerInjectableInterface
 
         $question->voteCount = $res->voteCount;
 
-        // Find all comments
-        $qComment = new QComments();
-        $qComment->setDb($this->di->get("dbqb"));
-        $qComments = $qComment->getAllqCommentsByQuestionId($qid);
-
-        foreach ($qComments as $com) {
-            $comUser = new User();
-            $comUser->setDb($this->di->get("dbqb"));
-            $res = $comUser->getUserDataById($com->userId);
-
-            $com->username = $comUser->acronym;
-
-            // Run markdown on question comments text
-            $com->text = $this->runMarkdown($com->text);
-
-            $questionCommentVotes = new QuestionCommentVotes();
-            $questionCommentVotes->setDb($this->di->get("dbqb"));
-            $res = $questionCommentVotes->countVoteForQCid($this->di, $com->id);
-
-            if ($res->voteCount == null) {
-                $res->voteCount = 0;
-            }
-
-            $com->voteCount = $res->voteCount;
-        }
-
-        $question->comments = $qComments;
+        $question->comments = $this->getQComments($qid);
 
         // Add username to array
         $user = new User();
@@ -252,34 +241,9 @@ class QuestionsController implements ContainerInjectableInterface
             $res = $user->getUserDataById($ans->userId);
             $ans->username = $user->acronym;
 
-            // Find all comments for answer
-            $aComment = new AComments();
-            $aComment->setDb($this->di->get("dbqb"));
-            $aComments = $aComment->getAllaCommentsByAnswerId($ans->id);
-
             // Run markdown on answers text
             $ans->text = $this->runMarkdown($ans->text);
 
-            foreach ($aComments as $com) {
-                $comUser = new User();
-                $comUser->setDb($this->di->get("dbqb"));
-                $res = $comUser->getUserDataById($com->userId);
-
-                $com->username = $comUser->acronym;
-
-                // Run markdown on answer comments text
-                $com->text = $this->runMarkdown($com->text);
-
-                $answerCommentVotes = new AnswerCommentVotes();
-                $answerCommentVotes->setDb($this->di->get("dbqb"));
-                $res = $answerCommentVotes->countVoteForACid($this->di, $com->id);
-
-                if ($res->voteCount == null) {
-                    $res->voteCount = 0;
-                }
-
-                $com->voteCount = $res->voteCount;
-            }
 
             $answerVotes = new AnswerVotes();
             $answerVotes->setDb($this->di->get("dbqb"));
@@ -291,7 +255,7 @@ class QuestionsController implements ContainerInjectableInterface
 
             $ans->voteCount = $res->voteCount;
 
-            $ans->comments = $aComments;
+            $ans->comments = $this->getAComments($ans->id);
         }
 
         if ($sort == 'date') {
@@ -318,11 +282,19 @@ class QuestionsController implements ContainerInjectableInterface
         ]);
     }
 
+    /**
+    * @SuppressWarnings(PHPMD.UnusedPrivateMethod)
+    * Used as a callback function by usort
+    */
     private static function sortByDateDESC($first, $second)
     {
         return $first->updated < $second->updated;
     }
 
+    /**
+    * @SuppressWarnings(PHPMD.UnusedPrivateMethod)
+    * Used as a callback function by usort
+    */
     private static function sortByRankDESC($first, $second)
     {
         return $first->voteCount < $second->voteCount;
@@ -408,7 +380,6 @@ class QuestionsController implements ContainerInjectableInterface
 
     public function markAcceptedAnswerAction($questionId, $answerId)
     {
-        $page = $this->di->get("page");
         $response = $this->di->get("response");
         $session = $this->di->get("session");
         $username = $session->get("acronym");
@@ -429,7 +400,6 @@ class QuestionsController implements ContainerInjectableInterface
 
     public function upVoteAction($questionId)
     {
-        $page = $this->di->get("page");
         $response = $this->di->get("response");
         $session = $this->di->get("session");
         $username = $session->get("acronym");
@@ -448,7 +418,6 @@ class QuestionsController implements ContainerInjectableInterface
 
     public function downVoteAction($questionId)
     {
-        $page = $this->di->get("page");
         $response = $this->di->get("response");
         $session = $this->di->get("session");
         $username = $session->get("acronym");
@@ -467,7 +436,6 @@ class QuestionsController implements ContainerInjectableInterface
 
     public function upVoteAnswerAction($questionId, $answerId)
     {
-        $page = $this->di->get("page");
         $response = $this->di->get("response");
         $session = $this->di->get("session");
         $username = $session->get("acronym");
@@ -486,7 +454,6 @@ class QuestionsController implements ContainerInjectableInterface
 
     public function downVoteAnswerAction($questionId, $answerId)
     {
-        $page = $this->di->get("page");
         $response = $this->di->get("response");
         $session = $this->di->get("session");
         $username = $session->get("acronym");
@@ -505,7 +472,6 @@ class QuestionsController implements ContainerInjectableInterface
 
     public function upVoteAnswerCommentAction($questionId, $acId)
     {
-        $page = $this->di->get("page");
         $response = $this->di->get("response");
         $session = $this->di->get("session");
         $username = $session->get("acronym");
@@ -524,7 +490,6 @@ class QuestionsController implements ContainerInjectableInterface
 
     public function downVoteAnswerCommentAction($questionId, $acId)
     {
-        $page = $this->di->get("page");
         $response = $this->di->get("response");
         $session = $this->di->get("session");
         $username = $session->get("acronym");
@@ -543,7 +508,6 @@ class QuestionsController implements ContainerInjectableInterface
 
     public function upVoteQuestionCommentAction($questionId, $qcId)
     {
-        $page = $this->di->get("page");
         $response = $this->di->get("response");
         $session = $this->di->get("session");
         $username = $session->get("acronym");
@@ -562,7 +526,6 @@ class QuestionsController implements ContainerInjectableInterface
 
     public function downVoteQuestionCommentAction($questionId, $qcId)
     {
-        $page = $this->di->get("page");
         $response = $this->di->get("response");
         $session = $this->di->get("session");
         $username = $session->get("acronym");

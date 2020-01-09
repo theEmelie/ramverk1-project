@@ -73,7 +73,7 @@ class CreateQCommentForm extends FormModel
             $qComments->active = $qComments->created;
             $qComments->save();
 
-            $response->redirect("questions/view/$questionId");
+            $response->redirect("questions/view/$questionId/date");
         } else {
             return false;
         }

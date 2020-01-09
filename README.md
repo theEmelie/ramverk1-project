@@ -10,14 +10,9 @@ How to install
 ------------------------------------
 * Get the code: `git clone https://github.com/theEmelie/ramverk1-project.git`
 * Create a database: `sqlite3 data/db.sqlite`
-* Insert these tables into the database:  
-`sqlite3 data/db.sqlite < sql/ddl/user_sqlite.sql`  
-`sqlite3 data/db.sqlite < sql/ddl/answers_sqlite.sql`  
-`sqlite3 data/db.sqlite < sql/ddl/questions_sqlite.sql`  
-`sqlite3 data/db.sqlite < sql/ddl/aComments_sqlite.sql`  
-`sqlite3 data/db.sqlite < sql/ddl/qComments_sqlite.sql`  
-`sqlite3 data/db.sqlite < sql/ddl/tags_sqlite.sql`  
-`sqlite3 data/db.sqlite < sql/ddl/tagQuestions_sqlite.sql`  
+* Insert these tables into the database with some populated data:  
+`sqlite3 data/db.sqlite < sql/ddl/setup.sql`  
+
 
 License
 ------------------

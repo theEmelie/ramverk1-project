@@ -74,7 +74,7 @@ class CreateAnswerForm extends FormModel
             $answer->active = $answer->created;
             $answer->save();
 
-            $response->redirect("questions/view/$questionId");
+            $response->redirect("questions/view/$questionId/date");
             // var_dump($answer);
         } else {
             return false;

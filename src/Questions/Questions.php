@@ -44,6 +44,19 @@ class Questions extends ActiveRecordModel
         return $this->findAllWhere("userId = ?", $uid);
     }
 
+    public function getQuestionTitleByAnswerId($di, $aid)
+    {
+        $dbqb = $di->get("dbqb");
+        $dbqb->connect();
+        $sql = "SELECT Questions.title AS questionTitle, Questions.id AS questionId FROM Answers INNER JOIN Questions ON Questions.id = Answers.questionId WHERE Answers.id = ?;";
+        $res = $dbqb->executeFetchAll($sql, [$aid]);
+
+        return $res[0];
+    }
+
+    /**
+    * @SuppressWarnings(PHPMD.UnusedPrivateMethod)
+    */
     private static function sortByDateDESC($first, $second)
     {
         return $first->updated < $second->updated;

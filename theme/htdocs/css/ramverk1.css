@@ -5858,6 +5858,27 @@ tr:nth-child(even) {
 .readMore {
   font-size: 14px;
 }
+.markAccepted {
+  font-size: 13px;
+  margin-bottom: 5px;
+}
+.answerVotes,
+.questionVotes {
+  font-size: 13px;
+}
+.commentVotes {
+  font-size: 10px;
+}
+.voteCount {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+.accepted {
+  display: block;
+  color: darkgreen;
+  font-weight: bold;
+  font-size: 14px;
+}
 /**
 * Input Pages
 */
@@ -5912,11 +5933,12 @@ textarea {
   float: right;
   width: 35%;
 }
-.accepted {
-  display: block;
-  color: darkgreen;
+/**
+* User activity page
+*/
+.reputationTitle {
+  border-bottom: none;
   font-weight: bold;
-  font-size: 14px;
 }
 /**
  * Layout for responsive style through media queries.

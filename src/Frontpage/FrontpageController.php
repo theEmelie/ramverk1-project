@@ -56,8 +56,6 @@ class FrontpageController implements ContainerInjectableInterface
     public function indexAction() : object
     {
         $page = $this->di->get("page");
-        $session = $this->di->get("session");
-
         $question = new Questions();
         $question->setDb($this->di->get("dbqb"));
         $limit = 3;
