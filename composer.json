@@ -1,6 +1,6 @@
 {
     "name" : "anax/noname",
-    "description": "A me page for the ramverk1 course.",
+    "description": "A project page for the ramverk1 course.",
     "license": "MIT",
     "minimum-stability": "beta",
     "prefer-stable": true,
