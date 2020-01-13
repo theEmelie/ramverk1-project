@@ -30,11 +30,6 @@ class FrontpageController implements ContainerInjectableInterface
         return $text;
     }
 
-    // public function sortByDateDESC($first, $second)
-    // {
-    //     return $first->updated > $second->updated;
-    // }
-
     public function getTagNames($qid)
     {
         // Get tags for question
@@ -75,11 +70,9 @@ class FrontpageController implements ContainerInjectableInterface
         $tagObj = new Tags();
         $tagObj->setDb($this->di->get("dbqb"));
         $popularTags = $tagObj->getMostPopularTags($this->di, $limit);
-        // var_dump($res);
 
         // Get most active users
         $userActivity = $user->getUserActivity($this->di, $limit);
-        // var_dump($userActivity);
 
         $page->add("frontpage/view", [
             "questions" => $questions,

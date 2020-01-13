@@ -244,7 +244,6 @@ class QuestionsController implements ContainerInjectableInterface
             // Run markdown on answers text
             $ans->text = $this->runMarkdown($ans->text);
 
-
             $answerVotes = new AnswerVotes();
             $answerVotes->setDb($this->di->get("dbqb"));
             $res = $answerVotes->countVoteForAid($this->di, $ans->id);

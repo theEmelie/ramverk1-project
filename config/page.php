@@ -12,7 +12,7 @@ return [
         "region" => "layout",
         "template" => "anax/v2/layout/dbwebb_se",
         "data" => [
-            "baseTitle" => " | ramverk1",
+            "baseTitle" => " | FurQuestions",
             "bodyClass" => null,
             "favicon" => "favicon.ico",
             "htmlClass" => null,
